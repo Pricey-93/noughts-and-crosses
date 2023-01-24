@@ -10,6 +10,9 @@ const gameboard = (() => {
     function paintTile(tile, mark) {
         tile.textContent = mark;
     }
+    function clearTiles() {
+        _tiles.length = 0;
+    }
 
     return {getTiles};
 })();
