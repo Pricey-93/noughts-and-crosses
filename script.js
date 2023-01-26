@@ -108,14 +108,22 @@ const userInterface = (() => {
 
 
 const controller = (() => {
-   
+    function _playRound(e) {
+        userInterface.paintTile(e.target, logic.getCurrentPlayer().getMark());
+        logic.increaseTurnCount();
+        console.log(logic.isWin());
+        
+        if (logic.isWin()) {
+            gameboard.getTiles().forEach(element => {
+                element.removeEventListener("click", _playRound);
+                });
+            }
 
-
+        logic.switchCurrentPlayer();
+    }
+    
     gameboard.getTiles().forEach(element => {
-        element.addEventListener("click", (e) => {
-            userInterface.paintTile(e.target, logic.getCurrentPlayer().getMark());
-            logic.increaseTurnCount();
-            logic.switchCurrentPlayer();
-        },{once: true})
+        element.addEventListener("click", _playRound, {once: true})
     });
+    
 })();
