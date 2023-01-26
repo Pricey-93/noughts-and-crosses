@@ -8,19 +8,22 @@ const gameboard = (() => {
             _tiles.push(children[i]);
         }
     }
+    function _clearTiles() {
+        _tiles.length = 0;
+    }
 
+    function initialise() {
+        _clearTiles();
+        _addTiles();
+    }
     function getTiles() {
         return _tiles;
     }
     function getTile(index) {
         return _tiles[index];
     }
-    function clearTiles() {
-        _tiles.length = 0;
-    }
 
-    _addTiles();
-    return {getTiles, getTile};
+    return {initialise, getTiles, getTile};
 })();
 
 
@@ -36,31 +39,32 @@ const logic = (() => {
     const playerCross = Player("x");
     const playerNought = Player("o");
 
-   const _state = {
-    turnCount: 1,
-    currentPlayer: "",
-    winner: "",
-    playerCross: playerCross,
-    playerNought: playerNought
+    const _state = {
+        currentPlayer: playerCross,
+        winner: "",
+        playerCross: playerCross,
+        playerNought: playerNought
     }
-    
-    function increaseTurnCount() {
-        _state.turnCount += 1;
+
+    function _setCurrentPlayer(Player) {
+        _state.currentPlayer = Player;
+    }
+    function _setWinner(Player) {
+        _state.winner = Player;
+    }
+
+    function initialise() {
+        _setCurrentPlayer(playerCross);
+        _setWinner("");
     }
     function getCurrentPlayer() {
         return _state.currentPlayer;
     }
-    function _setCurrentPlayer(Player) {
-        _state.currentPlayer = Player;
-    }
     function switchCurrentPlayer() {
-        _state.currentPlayer === playerCross ? _state.currentPlayer = playerNought : _state.currentPlayer = playerCross;
+        getCurrentPlayer() === playerCross ? _setCurrentPlayer(playerNought) : _setCurrentPlayer(playerCross);
     }
     function getWinner() {
         return _state.winner;
-    }
-    function _setWinner(Player) {
-        _state.winner = Player;
     }
     function printState() {
         console.log(_state);
@@ -86,9 +90,7 @@ const logic = (() => {
         }
     }
 
-    _setCurrentPlayer(playerCross);
-
-    return {printState, getCurrentPlayer, switchCurrentPlayer, increaseTurnCount, isWin};
+    return {initialise, printState, getCurrentPlayer, switchCurrentPlayer, isWin};
 })();
 
 
@@ -108,9 +110,12 @@ const userInterface = (() => {
 
 
 const controller = (() => {
+    function initialise() {
+        gameboard.initialise();
+        logic.initialise();
+    }
     function _playRound(e) {
         userInterface.paintTile(e.target, logic.getCurrentPlayer().getMark());
-        logic.increaseTurnCount();
         console.log(logic.isWin());
         
         if (logic.isWin()) {
@@ -122,8 +127,9 @@ const controller = (() => {
         logic.switchCurrentPlayer();
     }
     
+    initialise();
+
     gameboard.getTiles().forEach(element => {
         element.addEventListener("click", _playRound, {once: true})
     });
-    
 })();
