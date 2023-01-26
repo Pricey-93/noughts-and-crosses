@@ -26,33 +26,69 @@ const gameboard = (() => {
 
 
 const logic = (() => {
+    /**
+     * Inner factory function.
+     */
+     const Player = (mark) => {
+        const getMark = () => mark;
+        return {getMark};
+    }
+    const playerCross = Player("x");
+    const playerNought = Player("o");
+
    const _state = {
     turnCount: 1,
     currentPlayer: "",
-    winner: ""
+    winner: "",
+    playerCross: playerCross,
+    playerNought: playerNought
     }
+    
     function increaseTurnCount() {
         _state.turnCount += 1;
     }
     function getCurrentPlayer() {
         return _state.currentPlayer;
     }
-    function setCurrentPlayer(Player) {
+    function _setCurrentPlayer(Player) {
         _state.currentPlayer = Player;
+    }
+    function switchCurrentPlayer() {
+        _state.currentPlayer === playerCross ? _state.currentPlayer = playerNought : _state.currentPlayer = playerCross;
     }
     function getWinner() {
         return _state.winner;
     }
-    function setWinner(Player) {
+    function _setWinner(Player) {
         _state.winner = Player;
     }
-    
-
-    function getState() {
-        return _state;
+    function printState() {
+        console.log(_state);
+    }
+    function isWin() {
+        let currentMark = getCurrentPlayer().getMark();
+        switch (true) {
+            /*vertical win conditions*/
+        case gameboard.getTile(0).textContent === currentMark && gameboard.getTile(3).textContent === currentMark && gameboard.getTile(6).textContent === currentMark:
+        case gameboard.getTile(1).textContent === currentMark && gameboard.getTile(4).textContent === currentMark && gameboard.getTile(7).textContent === currentMark:
+        case gameboard.getTile(2).textContent === currentMark && gameboard.getTile(5).textContent === currentMark && gameboard.getTile(8).textContent === currentMark:
+            /*horizontal win conditions*/
+        case gameboard.getTile(0).textContent === currentMark && gameboard.getTile(1).textContent === currentMark && gameboard.getTile(2).textContent === currentMark: 
+        case gameboard.getTile(3).textContent === currentMark && gameboard.getTile(4).textContent === currentMark && gameboard.getTile(5).textContent === currentMark:
+        case gameboard.getTile(6).textContent === currentMark && gameboard.getTile(7).textContent === currentMark && gameboard.getTile(8).textContent === currentMark:
+            /*diagonal win conditions*/
+        case gameboard.getTile(0).textContent === currentMark && gameboard.getTile(4).textContent === currentMark && gameboard.getTile(8).textContent === currentMark:
+        case gameboard.getTile(2).textContent === currentMark && gameboard.getTile(4).textContent === currentMark && gameboard.getTile(6).textContent === currentMark:
+            _setWinner(getCurrentPlayer());
+            return true;
+        default:
+            return false;
+        }
     }
 
-    return {getState};
+    _setCurrentPlayer(playerCross);
+
+    return {printState, getCurrentPlayer, switchCurrentPlayer, increaseTurnCount, isWin};
 })();
 
 
@@ -66,15 +102,20 @@ const userInterface = (() => {
     function paintTile(tile, mark) {
         tile.textContent = mark;
     }
-    return {getInput};
+    return {getInput, paintTile};
 })();
 
 
 
 const controller = (() => {
-    const Player = (name) => {
-        function getName() {
-            return this.name;
-        }
-    }
+   
+
+
+    gameboard.getTiles().forEach(element => {
+        element.addEventListener("click", (e) => {
+            userInterface.paintTile(e.target, logic.getCurrentPlayer().getMark());
+            logic.increaseTurnCount();
+            logic.switchCurrentPlayer();
+        },{once: true})
+    });
 })();
