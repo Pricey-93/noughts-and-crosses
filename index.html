@@ -13,16 +13,24 @@
 </head>
 <body>
     <h1>Noughts and Crosses</h1>
-    <div id="game-board">
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
-        <div class="tile"></div>
+    <div id="player-info-container">
+        <p id="player-one">Player One [x]</p>
+        <p id="player-two">Player Two [o]</p>
+        <div id="game-board">
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+            <div class="tile"></div>
+        </div>
     </div>
+   <div id="win-screen">
+        <p id="win-message"></p>
+        <button id="replay-btn">Play Again</button>
+   </div> 
 </body>
 </html>
