@@ -32,12 +32,13 @@ const logic = (() => {
     /**
      * Inner factory function.
      */
-     const Player = (mark) => {
+     const Player = (name, mark) => {
+        const getName = () => name;
         const getMark = () => mark;
-        return {getMark};
+        return {getMark, getName};
     }
-    const playerCross = Player("x");
-    const playerNought = Player("o");
+    const playerCross = Player("Player One", "x");
+    const playerNought = Player("Player Two", "o");
 
     const _state = {
         currentPlayer: playerCross,
@@ -64,10 +65,7 @@ const logic = (() => {
         getCurrentPlayer() === playerCross ? _setCurrentPlayer(playerNought) : _setCurrentPlayer(playerCross);
     }
     function getWinner() {
-        return _state.winner;
-    }
-    function printState() {
-        console.log(_state);
+        return _state.winner.getName();
     }
     function isWin() {
         let currentMark = getCurrentPlayer().getMark();
@@ -90,46 +88,71 @@ const logic = (() => {
         }
     }
 
-    return {initialise, printState, getCurrentPlayer, switchCurrentPlayer, isWin};
+    return {initialise, getCurrentPlayer, switchCurrentPlayer, isWin, getWinner};
 })();
 
 
 
 const userInterface = (() => {
-    const _userInput = "";
+    // const _userInput = "";
+    const _winScreen = document.getElementById("win-screen");
+    const _winMessage = document.getElementById("win-message");
+    const _replayButton = document.getElementById("replay-btn");
     
-    function getInput(element) {
-        _userInput = element.textContent;
+    // function getInput(element) {
+    //     _userInput = element.textContent;
+    // }
+    function initialise() {
+        gameboard.getTiles().forEach(tile => {
+            paintTile(tile, "");
+        })
+        _hideWinScreen();
     }
     function paintTile(tile, mark) {
         tile.textContent = mark;
     }
-    return {getInput, paintTile};
+    function showWinScreen() {
+        _winScreen.style.display = "block";
+    }
+    function _hideWinScreen() {
+        _winScreen.style.display = "none";
+    }
+    function changeWinMessage(playerName) {
+     _winMessage.textContent = `Congratulations ${playerName}, you are the winner!`;
+    }
+    function getReplayButton() {
+        return _replayButton;
+    }
+    return {initialise, paintTile, showWinScreen, changeWinMessage, getReplayButton};
 })();
 
 
 
 const controller = (() => {
-    function initialise() {
+    function _initialise() {
         gameboard.initialise();
         logic.initialise();
+        userInterface.initialise();
+
+
+        gameboard.getTiles().forEach(element => {
+            element.addEventListener("click", _playRound, {once: true})
+        });
+        userInterface.getReplayButton().addEventListener("click", _initialise, {once: true});
     }
     function _playRound(e) {
         userInterface.paintTile(e.target, logic.getCurrentPlayer().getMark());
-        console.log(logic.isWin());
         
         if (logic.isWin()) {
             gameboard.getTiles().forEach(element => {
                 element.removeEventListener("click", _playRound);
                 });
+                userInterface.changeWinMessage(logic.getWinner());
+                userInterface.showWinScreen();
             }
-
         logic.switchCurrentPlayer();
     }
     
-    initialise();
-
-    gameboard.getTiles().forEach(element => {
-        element.addEventListener("click", _playRound, {once: true})
-    });
+    _initialise();
+   
 })();
