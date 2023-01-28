@@ -2,6 +2,15 @@ html {
     font-family: 'Rock Salt', cursive;
     text-align: center;
 }
+#player-one {
+    display: inline-block;
+    min-width: 49%;
+}
+#player-two {
+    display: inline-block;
+    min-width: 50%;
+}
+
 #game-board {
     display: grid;
     max-width: 60rem;
